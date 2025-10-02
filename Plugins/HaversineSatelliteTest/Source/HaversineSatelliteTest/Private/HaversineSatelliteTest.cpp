@@ -2,18 +2,19 @@
 
 #include "HaversineSatelliteTest.h"
 
+DEFINE_LOG_CATEGORY_STATIC(LogHaversineSatelliteModule, Log, All);
+
 #define LOCTEXT_NAMESPACE "FHaversineSatelliteTestModule"
 
 void FHaversineSatelliteTestModule::StartupModule()
 {
-	// This code will execute after your module is loaded into memory; the exact timing is specified in the .uplugin file per-module
-	UE_LOG(LogTemp, Warning, TEXT("I AM HERE!!"));
+	UE_LOG(LogHaversineSatelliteModule, Log, TEXT("HaversineSatelliteTest plugin module loaded"));
+	UE_LOG(LogHaversineSatelliteModule, Log, TEXT("Satellite subsystem will start when you press Play in the editor"));
 }
 
 void FHaversineSatelliteTestModule::ShutdownModule()
 {
-	// This function may be called during shutdown to clean up your module.  For modules that support dynamic reloading,
-	// we call this function before unloading the module.
+	UE_LOG(LogHaversineSatelliteModule, Log, TEXT("HaversineSatelliteTest plugin module unloading"));
 }
 
 #undef LOCTEXT_NAMESPACE

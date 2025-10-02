@@ -110,19 +110,44 @@ public class HaversineSatelliteTest : ModuleRules
     {
         if (Target.Platform == UnrealTargetPlatform.Mac)
         {
-            // Stage the full .framework bundles into the app. Unreal will copy directories recursively.
             string FrameworksRoot = Path.Combine(LibraryPath, "frameworks", "macos");
-            string HaversineFrameworkDir = Path.Combine(FrameworksRoot, "HaversineUnityPlugin.xcframework", "macos-arm64_x86_64", "HaversineUnityPlugin.framework");
-            string PPCommonFrameworkDir   = Path.Combine(FrameworksRoot, "PPCommon.xcframework", "macos-arm64_x86_64", "PPCommon.framework");
 
-            if (Directory.Exists(HaversineFrameworkDir))
-            {
-                RuntimeDependencies.Add(HaversineFrameworkDir, StagedFileType.NonUFS);
-            }
-            if (Directory.Exists(PPCommonFrameworkDir))
-            {
-                RuntimeDependencies.Add(PPCommonFrameworkDir, StagedFileType.NonUFS);
-            }
+                string HaversineFrameworkDir = Path.Combine(
+                    FrameworksRoot, "HaversineUnityPlugin.xcframework", "macos-arm64_x86_64", "HaversineUnityPlugin.framework");
+                string PPCommonFrameworkDir = Path.Combine(
+                    FrameworksRoot, "PPCommon.xcframework", "macos-arm64_x86_64", "PPCommon.framework");
+
+                // Editor/PIE: copy next to the module (works with @loader_path rpath)
+                if (Directory.Exists(HaversineFrameworkDir))
+                {
+                    RuntimeDependencies.Add(
+                        "$(BinaryOutputDir)/HaversineUnityPlugin.framework",
+                        Path.Combine(HaversineFrameworkDir, "*"),
+                        StagedFileType.NonUFS);
+                }
+                if (Directory.Exists(PPCommonFrameworkDir))
+                {
+                    RuntimeDependencies.Add(
+                        "$(BinaryOutputDir)/PPCommon.framework",
+                        Path.Combine(PPCommonFrameworkDir, "*"),
+                        StagedFileType.NonUFS);
+                }
+
+                // Packaged app: copy into Contents/Frameworks (works with @executable_path/../Frameworks rpath)
+                if (Directory.Exists(HaversineFrameworkDir))
+                {
+                    RuntimeDependencies.Add(
+                        "@executable_path/../Frameworks/HaversineUnityPlugin.framework",
+                        Path.Combine(HaversineFrameworkDir, "*"),
+                        StagedFileType.NonUFS);
+                }
+                if (Directory.Exists(PPCommonFrameworkDir))
+                {
+                    RuntimeDependencies.Add(
+                        "@executable_path/../Frameworks/PPCommon.framework",
+                        Path.Combine(PPCommonFrameworkDir, "*"),
+                        StagedFileType.NonUFS);
+                }
         }
         else if (Target.Platform == UnrealTargetPlatform.Win64)
         {
