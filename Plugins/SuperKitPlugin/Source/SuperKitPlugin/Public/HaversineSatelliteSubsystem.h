@@ -21,7 +21,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogHaversineSatellite, Log, All);
  * Auto-starts when game instance is created
  */
 UCLASS()
-class HAVERSINESATELLITETEST_API UHaversineSatelliteSubsystem : public UGameInstanceSubsystem
+class SUPERKITPLUGIN_API UHaversineSatelliteSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

@@ -4,7 +4,7 @@
 
 #include "Modules/ModuleManager.h"
 
-class FHaversineSatelliteTestModule : public IModuleInterface
+class FSuperKitPluginModule : public IModuleInterface
 {
 public:
 

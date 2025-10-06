@@ -4,9 +4,9 @@ using UnrealBuildTool;
 using System.IO;
 using System.Diagnostics;
 
-public class HaversineSatelliteTest : ModuleRules
+public class SuperKitPlugin : ModuleRules
 {
-    public HaversineSatelliteTest(ReadOnlyTargetRules Target) : base(Target)
+    public SuperKitPlugin(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 

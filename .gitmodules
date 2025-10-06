@@ -1,3 +1,3 @@
-[submodule "Plugins/HaversineSatelliteTest/HaversineSatelliteLibrary_CPP"]
-	path = Plugins/HaversineSatelliteTest/HaversineSatelliteLibrary_CPP
+[submodule "Plugins/SuperKitPlugin/HaversineSatelliteLibrary_CPP"]
+	path = Plugins/SuperKitPlugin/HaversineSatelliteLibrary_CPP
 	url = git@github.com:HyperionSensing/HaversineSatelliteLibrary_CPP.git
