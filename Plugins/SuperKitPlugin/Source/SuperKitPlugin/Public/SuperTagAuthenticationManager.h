@@ -4,10 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "Http.h"
 #include "SuperTagAuthenticationManager.generated.h"
 
 class USuperTagTokenCache;
+class IHttpRequest;
+class IHttpResponse;
+
+// Type aliases for HTTP shared pointers
+using FHttpRequestPtr = TSharedPtr<IHttpRequest, ESPMode::ThreadSafe>;
+using FHttpResponsePtr = TSharedPtr<IHttpResponse, ESPMode::ThreadSafe>;
 
 /**
  * Manager for handling authentication with Haversine satellites

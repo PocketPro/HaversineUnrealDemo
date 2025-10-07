@@ -5,6 +5,9 @@
 #include "CoreMinimal.h"
 #include "Subsystems/GameInstanceSubsystem.h"
 
+// Include plugin for core functionality and logging
+#include "SuperKitPlugin.h"
+
 // Include haversine library headers
 #include "haversine/haversine_satellite_manager.h"
 #include "haversine/haversine_satellite.h"
@@ -12,10 +15,7 @@
 #include "haversine/haversine_environment.h"
 #include "haversine/utils/events.h"
 
-#include "Logging/LogMacros.h"
 #include "HaversineSatelliteSubsystem.generated.h"
-
-DECLARE_LOG_CATEGORY_EXTERN(LogHaversineSatellite, Log, All);
 
 class USuperTagAuthenticationManager;
 class FSuperTagPermissionsDelegate;
@@ -27,7 +27,7 @@ class FSuperTagUpdateDelegate;
  * Integrates SuperTag authentication and permissions
  */
 UCLASS()
-class SUPERKITPLUGIN_API UHaversineSatelliteSubsystem : public UGameInstanceSubsystem
+class UNREALTEST1_API UHaversineSatelliteSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

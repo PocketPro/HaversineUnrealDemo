@@ -8,6 +8,9 @@ public class UnrealTest1 : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		// C++20 required for HaversineSatelliteSubsystem
+		CppStandard = CppStandardVersion.Cpp20;
+
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "SuperKitPlugin" });
 	}
 }

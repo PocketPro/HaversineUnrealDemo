@@ -3,6 +3,7 @@
 #include "SuperKitPlugin.h"
 
 DEFINE_LOG_CATEGORY_STATIC(LogHaversineSatelliteModule, Log, All);
+DEFINE_LOG_CATEGORY(LogHaversineSatellite);
 
 #define LOCTEXT_NAMESPACE "FSuperKitPluginModule"
 

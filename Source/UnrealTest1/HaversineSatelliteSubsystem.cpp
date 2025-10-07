@@ -11,9 +11,6 @@
 #include "haversine/haversine_satellite_state.h"
 #include "haversine/satellite_id.h"
 #include "haversine/utils/events.h"
-#include "HaversineSatelliteSubsystem.h"
-
-DEFINE_LOG_CATEGORY(LogHaversineSatellite);
 
 //
 // Nested Delegate Classes
@@ -98,7 +95,14 @@ void UHaversineSatelliteSubsystem::Initialize(FSubsystemCollectionBase& Collecti
 {
 	Super::Initialize(Collection);
 
+	UE_LOG(LogHaversineSatellite, Warning, TEXT("*** HAVERSINE SATELLITE SUBSYSTEM STARTING ***"));
 	UE_LOG(LogHaversineSatellite, Log, TEXT("Initializing Haversine Satellite Subsystem with SuperTag authentication"));
+
+	// On-screen debug message
+	if (GEngine)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, TEXT("Haversine Satellite Subsystem Initialized!"));
+	}
 
 	// Create authentication manager (UObject)
 	AuthenticationManager = NewObject<USuperTagAuthenticationManager>(this);

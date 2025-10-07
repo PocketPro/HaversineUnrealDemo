@@ -2,7 +2,7 @@
 
 #include "SuperTagExtensions.h"
 #include "SuperTagAuthenticationManager.h"
-#include "HaversineSatelliteSubsystem.h"
+#include "SuperKitPlugin.h"
 #include "haversine/haversine_satellite_state.h"
 #include "GolfSwing_sensor_metadata.h"
 #include "GolfSwing_errors.h"

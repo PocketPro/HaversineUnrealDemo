@@ -2,7 +2,7 @@
 
 #include "SuperTagTokenCache.h"
 #include "Kismet/GameplayStatics.h"
-#include "HaversineSatelliteSubsystem.h"
+#include "SuperKitPlugin.h"
 
 const FString USuperTagTokenCache::SaveSlotName = TEXT("SuperTagTokenCache");
 const int32 USuperTagTokenCache::UserIndex = 0;
