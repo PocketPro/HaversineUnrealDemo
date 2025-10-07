@@ -15,19 +15,20 @@
 #include "haversine/haversine_environment.h"
 #include "haversine/utils/events.h"
 
-#include "HaversineSatelliteSubsystem.generated.h"
+#include "HaversineDemoSubsystem.generated.h"
 
 class USuperTagAuthenticationManager;
 class FSuperTagPermissionsDelegate;
 class FSuperTagUpdateDelegate;
 
 /**
- * Subsystem that manages Haversine satellite scanning and discovery
+ * Demo subsystem that shows how to use the SuperKit plugin
+ * Manages Haversine satellite scanning and discovery
  * Auto-starts when game instance is created
  * Integrates SuperTag authentication and permissions
  */
 UCLASS()
-class UNREALTEST1_API UHaversineSatelliteSubsystem : public UGameInstanceSubsystem
+class UNREALTEST1_API UHaversineDemoSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

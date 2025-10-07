@@ -1,6 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "HaversineSatelliteSubsystem.h"
+#include "HaversineDemoSubsystem.h"
 #include "SuperTagAuthenticationManager.h"
 #include "SuperTagPermissionsDelegate.h"
 #include "SuperTagUpdateDelegate.h"
@@ -16,7 +16,7 @@
 // Nested Delegate Classes
 //
 
-class UHaversineSatelliteSubsystem::CollectionTransferDelegate : public haversine::HaversineCollectionTransferDelegate
+class UHaversineDemoSubsystem::CollectionTransferDelegate : public haversine::HaversineCollectionTransferDelegate
 {
 public:
 	explicit CollectionTransferDelegate(USuperTagAuthenticationManager* InAuthManager)
@@ -88,10 +88,10 @@ private:
 };
 
 //
-// UHaversineSatelliteSubsystem Implementation
+// UHaversineDemoSubsystem Implementation
 //
 
-void UHaversineSatelliteSubsystem::Initialize(FSubsystemCollectionBase& Collection)
+void UHaversineDemoSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
 	Super::Initialize(Collection);
 
@@ -162,7 +162,7 @@ void UHaversineSatelliteSubsystem::Initialize(FSubsystemCollectionBase& Collecti
 	}
 }
 
-void UHaversineSatelliteSubsystem::Deinitialize()
+void UHaversineDemoSubsystem::Deinitialize()
 {
 	UE_LOG(LogHaversineSatellite, Log, TEXT("Shutting down Haversine Satellite Subsystem"));
 
@@ -198,7 +198,7 @@ void UHaversineSatelliteSubsystem::Deinitialize()
 	Super::Deinitialize();
 }
 
-void UHaversineSatelliteSubsystem::StartScanning()
+void UHaversineDemoSubsystem::StartScanning()
 {
 	if (!SatelliteManager)
 	{
@@ -226,7 +226,7 @@ void UHaversineSatelliteSubsystem::StartScanning()
 	}
 }
 
-void UHaversineSatelliteSubsystem::OnBluetoothStateChanged(const haversine::BluetoothState& State)
+void UHaversineDemoSubsystem::OnBluetoothStateChanged(const haversine::BluetoothState& State)
 {
 	UE_LOG(LogHaversineSatellite, Log, TEXT("Bluetooth State: %s"), *BluetoothStateToString(State));
 
@@ -238,7 +238,7 @@ void UHaversineSatelliteSubsystem::OnBluetoothStateChanged(const haversine::Blue
 	}
 }
 
-void UHaversineSatelliteSubsystem::OnSatelliteDiscovered(const std::shared_ptr<haversine::HaversineSatellite>& Satellite)
+void UHaversineDemoSubsystem::OnSatelliteDiscovered(const std::shared_ptr<haversine::HaversineSatellite>& Satellite)
 {
 	if (!Satellite)
 	{
@@ -282,7 +282,7 @@ void UHaversineSatelliteSubsystem::OnSatelliteDiscovered(const std::shared_ptr<h
 		*SatelliteID, *SatelliteName, *StateInfo, *ClubInfo, *UserInfo);
 }
 
-void UHaversineSatelliteSubsystem::OnScanCompleted(const haversine::Status& Status)
+void UHaversineDemoSubsystem::OnScanCompleted(const haversine::Status& Status)
 {
 	if (Status.ok())
 	{
@@ -295,7 +295,7 @@ void UHaversineSatelliteSubsystem::OnScanCompleted(const haversine::Status& Stat
 	}
 }
 
-FString UHaversineSatelliteSubsystem::FormatSatelliteState(const haversine::SatelliteState& State)
+FString UHaversineDemoSubsystem::FormatSatelliteState(const haversine::SatelliteState& State)
 {
 	// Movement/collecting status
 	FString MovementState;
@@ -348,7 +348,7 @@ FString UHaversineSatelliteSubsystem::FormatSatelliteState(const haversine::Sate
 		*MovementState, *FirmwareVersion, *StatusIconsStr, *Collections);
 }
 
-FString UHaversineSatelliteSubsystem::BluetoothStateToString(haversine::BluetoothState State)
+FString UHaversineDemoSubsystem::BluetoothStateToString(haversine::BluetoothState State)
 {
 	switch (State)
 	{
