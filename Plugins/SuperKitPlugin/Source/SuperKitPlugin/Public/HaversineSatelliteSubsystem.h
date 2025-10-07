@@ -12,13 +12,19 @@
 #include "haversine/haversine_environment.h"
 #include "haversine/utils/events.h"
 
+#include "Logging/LogMacros.h"
 #include "HaversineSatelliteSubsystem.generated.h"
 
 DECLARE_LOG_CATEGORY_EXTERN(LogHaversineSatellite, Log, All);
 
+class USuperTagAuthenticationManager;
+class FSuperTagPermissionsDelegate;
+class FSuperTagUpdateDelegate;
+
 /**
  * Subsystem that manages Haversine satellite scanning and discovery
  * Auto-starts when game instance is created
+ * Integrates SuperTag authentication and permissions
  */
 UCLASS()
 class SUPERKITPLUGIN_API UHaversineSatelliteSubsystem : public UGameInstanceSubsystem
@@ -30,13 +36,27 @@ public:
 	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 	virtual void Deinitialize() override;
 
+	/**
+	 * Get the authentication manager
+	 * @return The authentication manager instance
+	 */
+	USuperTagAuthenticationManager* GetAuthenticationManager() const { return AuthenticationManager; }
+
 private:
-	// Nested delegate classes (defined in .cpp)
-	class PermissionsDelegate;
+	// Collection transfer delegate (defined in .cpp)
 	class CollectionTransferDelegate;
+
+	// Authentication manager (UObject)
+	UPROPERTY()
+	USuperTagAuthenticationManager* AuthenticationManager;
 
 	// Satellite manager
 	std::unique_ptr<haversine::HaversineSatelliteManager> SatelliteManager;
+
+	// SuperTag delegates (owned by this subsystem, moved into environment)
+	FSuperTagPermissionsDelegate* PermissionsDelegate;
+	FSuperTagUpdateDelegate* UpdateDelegate;
+	CollectionTransferDelegate* TransferDelegate;
 
 	// Event subscriptions (RAII cleanup)
 	std::unique_ptr<haversine::EventSubscription<haversine::BluetoothState>> BluetoothSubscription;

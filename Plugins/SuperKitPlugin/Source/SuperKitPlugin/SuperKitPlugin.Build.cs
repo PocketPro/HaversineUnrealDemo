@@ -33,6 +33,9 @@ public class SuperKitPlugin : ModuleRules
             "Engine",
             "Slate",
             "SlateCore",
+            "HTTP",              // For authentication HTTP requests
+            "Json",              // For JSON parsing
+            "JsonUtilities"      // For JSON serialization
         });
 
         // Link libraries / frameworks per-platform
@@ -79,13 +82,19 @@ public class SuperKitPlugin : ModuleRules
 
             string HaversineFrameworkDir = Path.Combine(FrameworksRoot, "HaversineUnityPlugin.xcframework", "macos-arm64_x86_64", "HaversineUnityPlugin.framework");
             string PPCommonFrameworkDir   = Path.Combine(FrameworksRoot, "PPCommon.xcframework", "macos-arm64_x86_64", "PPCommon.framework");
+            string GolfSwingKitFrameworkDir = Path.Combine(FrameworksRoot, "GolfSwingKit.xcframework", "macos-arm64_x86_64", "GolfSwingKit.framework");
 
             // Linker inputs (point directly at the binary inside the .framework)
             PublicAdditionalLibraries.Add(Path.Combine(HaversineFrameworkDir, "HaversineUnityPlugin"));
             PublicAdditionalLibraries.Add(Path.Combine(PPCommonFrameworkDir, "PPCommon"));
+            PublicAdditionalLibraries.Add(Path.Combine(GolfSwingKitFrameworkDir, "GolfSwingKit"));
 
             // Optional (helps IntelliSense/includes if you include headers from the frameworks)
             PublicIncludePaths.Add(Path.Combine(HaversineFrameworkDir, "Headers"));
+            PublicIncludePaths.Add(Path.Combine(GolfSwingKitFrameworkDir, "Headers"));
+
+            // Add PPCommon Headers directory so that <PPCommon/PPCommon.h> resolves correctly
+            // (PPCommon.framework has a symlink PPCommon -> . in its Headers directory)
             PublicIncludePaths.Add(Path.Combine(PPCommonFrameworkDir, "Headers"));
 
             // NOTE: Do NOT add these names to PublicFrameworks (that emits `-framework` without a path).
@@ -116,6 +125,8 @@ public class SuperKitPlugin : ModuleRules
                     FrameworksRoot, "HaversineUnityPlugin.xcframework", "macos-arm64_x86_64", "HaversineUnityPlugin.framework");
                 string PPCommonFrameworkDir = Path.Combine(
                     FrameworksRoot, "PPCommon.xcframework", "macos-arm64_x86_64", "PPCommon.framework");
+                string GolfSwingKitFrameworkDir = Path.Combine(
+                    FrameworksRoot, "GolfSwingKit.xcframework", "macos-arm64_x86_64", "GolfSwingKit.framework");
 
                 // Editor/PIE: copy next to the module (works with @loader_path rpath)
                 if (Directory.Exists(HaversineFrameworkDir))
@@ -132,6 +143,13 @@ public class SuperKitPlugin : ModuleRules
                         Path.Combine(PPCommonFrameworkDir, "*"),
                         StagedFileType.NonUFS);
                 }
+                if (Directory.Exists(GolfSwingKitFrameworkDir))
+                {
+                    RuntimeDependencies.Add(
+                        "$(BinaryOutputDir)/GolfSwingKit.framework",
+                        Path.Combine(GolfSwingKitFrameworkDir, "*"),
+                        StagedFileType.NonUFS);
+                }
 
                 // Packaged app: copy into Contents/Frameworks (works with @executable_path/../Frameworks rpath)
                 if (Directory.Exists(HaversineFrameworkDir))
@@ -146,6 +164,13 @@ public class SuperKitPlugin : ModuleRules
                     RuntimeDependencies.Add(
                         "@executable_path/../Frameworks/PPCommon.framework",
                         Path.Combine(PPCommonFrameworkDir, "*"),
+                        StagedFileType.NonUFS);
+                }
+                if (Directory.Exists(GolfSwingKitFrameworkDir))
+                {
+                    RuntimeDependencies.Add(
+                        "@executable_path/../Frameworks/GolfSwingKit.framework",
+                        Path.Combine(GolfSwingKitFrameworkDir, "*"),
                         StagedFileType.NonUFS);
                 }
         }

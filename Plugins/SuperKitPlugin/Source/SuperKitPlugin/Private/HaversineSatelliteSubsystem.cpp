@@ -1,12 +1,17 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "HaversineSatelliteSubsystem.h"
+#include "SuperTagAuthenticationManager.h"
+#include "SuperTagPermissionsDelegate.h"
+#include "SuperTagUpdateDelegate.h"
+#include "SuperTagExtensions.h"
 #include "haversine/haversine_satellite_manager.h"
 #include "haversine/haversine_environment.h"
 #include "haversine/haversine_satellite.h"
 #include "haversine/haversine_satellite_state.h"
 #include "haversine/satellite_id.h"
 #include "haversine/utils/events.h"
+#include "HaversineSatelliteSubsystem.h"
 
 DEFINE_LOG_CATEGORY(LogHaversineSatellite);
 
@@ -14,34 +19,25 @@ DEFINE_LOG_CATEGORY(LogHaversineSatellite);
 // Nested Delegate Classes
 //
 
-class UHaversineSatelliteSubsystem::PermissionsDelegate : public haversine::HaversinePermissionsDelegate
-{
-public:
-	virtual bool should_handle_advertisement(const HaversineAdvertisement& Advertisement) override
-	{
-		// Accept all satellites
-		return true;
-	}
-
-	virtual bool should_handle_satellite(const haversine::HaversineSatellite& Satellite) override
-	{
-		// Accept all satellites
-		return true;
-	}
-};
-
 class UHaversineSatelliteSubsystem::CollectionTransferDelegate : public haversine::HaversineCollectionTransferDelegate
 {
 public:
+	explicit CollectionTransferDelegate(USuperTagAuthenticationManager* InAuthManager)
+		: AuthManager(InAuthManager)
+	{
+	}
+
 	virtual uint16_t first_collection_to_transfer(
 		const haversine::CollectionIndexes& Range,
 		const haversine::SatelliteId& SatelliteId) override
 	{
-		// Transfer all collections - start from the first one
+		// For this demo, transfer the last swing (most recent)
+		// To transfer all, return Range.start_index
+		// To transfer none, return Range.end_index
 		FString SatID = UTF8_TO_TCHAR(SatelliteId.str().c_str());
 		UE_LOG(LogHaversineSatellite, Log, TEXT("  → Starting collection transfer from index %d to %d for satellite %s"),
 			Range.start_index, Range.end_index, *SatID);
-		return Range.start_index;
+		return Range.end_index - 1; // Transfer last swing only
 	}
 
 	virtual void will_transfer_collections(
@@ -61,6 +57,22 @@ public:
 		FString SatID = UTF8_TO_TCHAR(SatelliteId.str().c_str());
 		UE_LOG(LogHaversineSatellite, Log, TEXT("  ✓ Collection %d transferred successfully (%d bytes) from satellite %s"),
 			CollectionIndex, CollectionData.size(), *SatID);
+
+		// TODO: Parse swing data using GolfSwingKit when available
+		// For now, we just log that we received the data
+		// Example of what would be done:
+		/*
+		if (AuthManager)
+		{
+			FString HardwareId = UTF8_TO_TCHAR(SatelliteId.str().c_str());
+			FString AuthToken = AuthManager->CachedAuthenticationToken(HardwareId);
+			void* AuthCache = AuthManager->GetAuthTokenCacheHandle();
+
+			// Parse swing data (requires GolfSwingKit GSSwing class)
+			// GSSwing Swing(CollectionData.data(), CollectionData.size(), AuthToken, AuthCache);
+			// ... process swing data ...
+		}
+		*/
 	}
 
 	virtual void collection_transfer_did_fail(
@@ -73,6 +85,9 @@ public:
 		UE_LOG(LogHaversineSatellite, Error, TEXT("  ✗ Collection %d transfer failed: %s for satellite %s"),
 			CollectionIndex, *ErrorMsg, *SatID);
 	}
+
+private:
+	USuperTagAuthenticationManager* AuthManager;
 };
 
 //
@@ -83,15 +98,21 @@ void UHaversineSatelliteSubsystem::Initialize(FSubsystemCollectionBase& Collecti
 {
 	Super::Initialize(Collection);
 
-	UE_LOG(LogHaversineSatellite, Log, TEXT("Initializing Haversine Satellite Subsystem"));
+	UE_LOG(LogHaversineSatellite, Log, TEXT("Initializing Haversine Satellite Subsystem with SuperTag authentication"));
 
-	// Create environment with delegates
-	auto PermissionsDelegatePtr = std::make_unique<UHaversineSatelliteSubsystem::PermissionsDelegate>();
-	auto TransferDelegatePtr = std::make_unique<UHaversineSatelliteSubsystem::CollectionTransferDelegate>();
+	// Create authentication manager (UObject)
+	AuthenticationManager = NewObject<USuperTagAuthenticationManager>(this);
 
+	// Create SuperTag delegates (raw pointers, ownership transferred to environment)
+	PermissionsDelegate = new FSuperTagPermissionsDelegate(AuthenticationManager);
+	UpdateDelegate = new FSuperTagUpdateDelegate();
+	TransferDelegate = new CollectionTransferDelegate(AuthenticationManager);
+
+	// Create environment with SuperTag delegates
 	haversine::HaversineEnvironment Environment;
-	Environment.set_permissions_delegate(std::move(PermissionsDelegatePtr));
-	Environment.set_transfer_delegate(std::move(TransferDelegatePtr));
+	Environment.set_permissions_delegate(std::unique_ptr<haversine::HaversinePermissionsDelegate>(PermissionsDelegate));
+	Environment.set_update_delegate(std::unique_ptr<haversine::HaversineUpdateDelegate>(UpdateDelegate));
+	Environment.set_transfer_delegate(std::unique_ptr<haversine::HaversineCollectionTransferDelegate>(TransferDelegate));
 
 	// Create manager (hardware version 10.0)
 	UE_LOG(LogHaversineSatellite, Log, TEXT("Creating satellite manager (HW version 10.0)"));
@@ -227,8 +248,34 @@ void UHaversineSatelliteSubsystem::OnSatelliteDiscovered(const std::shared_ptr<h
 		: TEXT("(unnamed)");
 	FString StateInfo = FormatSatelliteState(Satellite->state());
 
-	UE_LOG(LogHaversineSatellite, Log, TEXT("🛰️  Discovered: %s (%s) - %s"),
-		*SatelliteID, *SatelliteName, *StateInfo);
+	// Try to parse metadata with authentication
+	FString ClubInfo = TEXT("none");
+	FString UserInfo = TEXT("none");
+	if (AuthenticationManager)
+	{
+		try
+		{
+			FSuperTagMetadata Metadata = FSuperTagExtensions::ParseMetadata(Satellite->state(), AuthenticationManager);
+
+			if (Metadata.Club.IsSet())
+			{
+				// TODO: Format club info when GolfSwingKit is available
+				ClubInfo = TEXT("club detected");
+			}
+
+			if (Metadata.UserId.IsSet())
+			{
+				UserInfo = FString::Printf(TEXT("User %u"), Metadata.UserId.GetValue());
+			}
+		}
+		catch (...)
+		{
+			ClubInfo = TEXT("parse error");
+		}
+	}
+
+	UE_LOG(LogHaversineSatellite, Log, TEXT("🛰️  Discovered: %s (%s) - %s | Club: %s | User: %s"),
+		*SatelliteID, *SatelliteName, *StateInfo, *ClubInfo, *UserInfo);
 }
 
 void UHaversineSatelliteSubsystem::OnScanCompleted(const haversine::Status& Status)
