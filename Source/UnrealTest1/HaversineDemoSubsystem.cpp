@@ -5,12 +5,17 @@
 #include "SuperTagPermissionsDelegate.h"
 #include "SuperTagUpdateDelegate.h"
 #include "SuperTagExtensions.h"
+#include "SuperTagGolfSwing.h"
 #include "haversine/haversine_satellite_manager.h"
 #include "haversine/haversine_environment.h"
 #include "haversine/haversine_satellite.h"
 #include "haversine/haversine_satellite_state.h"
 #include "haversine/satellite_id.h"
 #include "haversine/utils/events.h"
+
+// Forward declaration for GolfSwingKit types
+struct GSAuthTokenCache_s;
+typedef struct GSAuthTokenCache_s GSAuthTokenCache_t;
 
 //
 // Nested Delegate Classes
@@ -55,21 +60,50 @@ public:
 		UE_LOG(LogHaversineSatellite, Log, TEXT("  ✓ Collection %d transferred successfully (%d bytes) from satellite %s"),
 			CollectionIndex, CollectionData.size(), *SatID);
 
-		// TODO: Parse swing data using GolfSwingKit when available
-		// For now, we just log that we received the data
-		// Example of what would be done:
-		/*
-		if (AuthManager)
+		// Parse hardware ID from swing data
+		FString HardwareId = FSuperTagGolfSwing::ParseHardwareId(CollectionData);
+		if (HardwareId.IsEmpty())
 		{
-			FString HardwareId = UTF8_TO_TCHAR(SatelliteId.str().c_str());
-			FString AuthToken = AuthManager->CachedAuthenticationToken(HardwareId);
-			void* AuthCache = AuthManager->GetAuthTokenCacheHandle();
-
-			// Parse swing data (requires GolfSwingKit GSSwing class)
-			// GSSwing Swing(CollectionData.data(), CollectionData.size(), AuthToken, AuthCache);
-			// ... process swing data ...
+			UE_LOG(LogHaversineSatellite, Error, TEXT("  ✗ Failed to parse hardware ID from swing data"));
+			return;
 		}
-		*/
+
+		// Get authentication token for this hardware
+		if (!AuthManager)
+		{
+			UE_LOG(LogHaversineSatellite, Error, TEXT("  ✗ AuthManager is null, cannot process swing"));
+			return;
+		}
+
+		FString AuthToken = AuthManager->CachedAuthenticationToken(HardwareId);
+		if (AuthToken.IsEmpty())
+		{
+			UE_LOG(LogHaversineSatellite, Error, TEXT("  ✗ No authentication token for satellite %s, swing discarded"), *HardwareId);
+			return;
+		}
+
+		// Create and parse swing object
+		GSAuthTokenCache_t* TokenCache = static_cast<GSAuthTokenCache_t*>(AuthManager->GetAuthTokenCacheHandle());
+		FSuperTagGolfSwing Swing(CollectionData, AuthToken, TokenCache);
+		if (!Swing.IsValid())
+		{
+			UE_LOG(LogHaversineSatellite, Error, TEXT("  ✗ Swing failed reconstruction from satellite %s"), *HardwareId);
+			return;
+		}
+
+		// Log swing details
+		FString ClubName = Swing.GetClub();
+		float Speed = Swing.GetClubheadSpeed();
+		FString Handedness = Swing.IsRightHanded() ? TEXT("Right") : TEXT("Left");
+		UE_LOG(LogHaversineSatellite, Log, TEXT("  ✓ Swing processed: Club=%s, Speed=%.1f MPH, %s"),
+			*ClubName, Speed, *Handedness);
+
+		// Display on-screen message
+		if (GEngine)
+		{
+			FString Message = FString::Printf(TEXT("Swing: %s @ %.1f MPH (%s)"), *ClubName, Speed, *Handedness);
+			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, Message);
+		}
 	}
 
 	virtual void collection_transfer_did_fail(
