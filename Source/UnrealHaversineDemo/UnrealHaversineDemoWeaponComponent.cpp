@@ -1,9 +1,9 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 
-#include "UnrealTest1WeaponComponent.h"
-#include "UnrealTest1Character.h"
-#include "UnrealTest1Projectile.h"
+#include "UnrealHaversineDemoWeaponComponent.h"
+#include "UnrealHaversineDemoCharacter.h"
+#include "UnrealHaversineDemoProjectile.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Kismet/GameplayStatics.h"
@@ -14,14 +14,14 @@
 #include "Engine/World.h"
 
 // Sets default values for this component's properties
-UUnrealTest1WeaponComponent::UUnrealTest1WeaponComponent()
+UUnrealHaversineDemoWeaponComponent::UUnrealHaversineDemoWeaponComponent()
 {
 	// Default offset from the character location for projectiles to spawn
 	MuzzleOffset = FVector(100.0f, 0.0f, 10.0f);
 }
 
 
-void UUnrealTest1WeaponComponent::Fire()
+void UUnrealHaversineDemoWeaponComponent::Fire()
 {
 	if (Character == nullptr || Character->GetController() == nullptr)
 	{
@@ -44,7 +44,7 @@ void UUnrealTest1WeaponComponent::Fire()
 			ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 	
 			// Spawn the projectile at the muzzle
-			World->SpawnActor<AUnrealTest1Projectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
+			World->SpawnActor<AUnrealHaversineDemoProjectile>(ProjectileClass, SpawnLocation, SpawnRotation, ActorSpawnParams);
 		}
 	}
 	
@@ -66,12 +66,12 @@ void UUnrealTest1WeaponComponent::Fire()
 	}
 }
 
-bool UUnrealTest1WeaponComponent::AttachWeapon(AUnrealTest1Character* TargetCharacter)
+bool UUnrealHaversineDemoWeaponComponent::AttachWeapon(AUnrealHaversineDemoCharacter* TargetCharacter)
 {
 	Character = TargetCharacter;
 
 	// Check that the character is valid, and has no weapon component yet
-	if (Character == nullptr || Character->GetInstanceComponents().FindItemByClass<UUnrealTest1WeaponComponent>())
+	if (Character == nullptr || Character->GetInstanceComponents().FindItemByClass<UUnrealHaversineDemoWeaponComponent>())
 	{
 		return false;
 	}
@@ -92,14 +92,14 @@ bool UUnrealTest1WeaponComponent::AttachWeapon(AUnrealTest1Character* TargetChar
 		if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerController->InputComponent))
 		{
 			// Fire
-			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UUnrealTest1WeaponComponent::Fire);
+			EnhancedInputComponent->BindAction(FireAction, ETriggerEvent::Triggered, this, &UUnrealHaversineDemoWeaponComponent::Fire);
 		}
 	}
 
 	return true;
 }
 
-void UUnrealTest1WeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
+void UUnrealHaversineDemoWeaponComponent::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	// ensure we have a character owner
 	if (Character != nullptr)

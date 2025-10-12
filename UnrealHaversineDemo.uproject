@@ -5,7 +5,7 @@
 	"Description": "",
 	"Modules": [
 		{
-			"Name": "UnrealTest1",
+			"Name": "UnrealHaversineDemo",
 			"Type": "Runtime",
 			"LoadingPhase": "Default"
 		}

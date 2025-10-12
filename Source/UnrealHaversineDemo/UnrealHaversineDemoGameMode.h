@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "UnrealTest1GameMode.generated.h"
+#include "UnrealHaversineDemoGameMode.generated.h"
 
 UCLASS(minimalapi)
-class AUnrealTest1GameMode : public AGameModeBase
+class AUnrealHaversineDemoGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
 public:
-	AUnrealTest1GameMode();
+	AUnrealHaversineDemoGameMode();
 };
 
 

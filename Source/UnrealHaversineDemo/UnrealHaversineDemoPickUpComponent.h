@@ -4,15 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Components/SphereComponent.h"
-#include "UnrealTest1Character.h"
-#include "UnrealTest1PickUpComponent.generated.h"
+#include "UnrealHaversineDemoCharacter.h"
+#include "UnrealHaversineDemoPickUpComponent.generated.h"
 
 // Declaration of the delegate that will be called when someone picks this up
 // The character picking this up is the parameter sent with the notification
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickUp, AUnrealTest1Character*, PickUpCharacter);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPickUp, AUnrealHaversineDemoCharacter*, PickUpCharacter);
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class UNREALTEST1_API UUnrealTest1PickUpComponent : public USphereComponent
+class UNREALHAVERSINEDEMO_API UUnrealHaversineDemoPickUpComponent : public USphereComponent
 {
 	GENERATED_BODY()
 
@@ -22,7 +22,7 @@ public:
 	UPROPERTY(BlueprintAssignable, Category = "Interaction")
 	FOnPickUp OnPickUp;
 
-	UUnrealTest1PickUpComponent();
+	UUnrealHaversineDemoPickUpComponent();
 protected:
 
 	/** Called when the game starts */

@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "UnrealTest1Projectile.generated.h"
+#include "UnrealHaversineDemoProjectile.generated.h"
 
 class USphereComponent;
 class UProjectileMovementComponent;
 
 UCLASS(config=Game)
-class AUnrealTest1Projectile : public AActor
+class AUnrealHaversineDemoProjectile : public AActor
 {
 	GENERATED_BODY()
 
@@ -23,7 +23,7 @@ class AUnrealTest1Projectile : public AActor
 	UProjectileMovementComponent* ProjectileMovement;
 
 public:
-	AUnrealTest1Projectile();
+	AUnrealHaversineDemoProjectile();
 
 	/** called when projectile hits something */
 	UFUNCTION()

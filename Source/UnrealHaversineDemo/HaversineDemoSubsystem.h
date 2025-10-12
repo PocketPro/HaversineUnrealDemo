@@ -28,7 +28,7 @@ class FSuperTagUpdateDelegate;
  * Integrates SuperTag authentication and permissions
  */
 UCLASS()
-class UNREALTEST1_API UHaversineDemoSubsystem : public UGameInstanceSubsystem
+class UNREALHAVERSINEDEMO_API UHaversineDemoSubsystem : public UGameInstanceSubsystem
 {
 	GENERATED_BODY()
 

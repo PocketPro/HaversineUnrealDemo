@@ -1,7 +1,7 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "UnrealTest1Character.h"
-#include "UnrealTest1Projectile.h"
+#include "UnrealHaversineDemoCharacter.h"
+#include "UnrealHaversineDemoProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -14,9 +14,9 @@
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
-// AUnrealTest1Character
+// AUnrealHaversineDemoCharacter
 
-AUnrealTest1Character::AUnrealTest1Character()
+AUnrealHaversineDemoCharacter::AUnrealHaversineDemoCharacter()
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(55.f, 96.0f);
@@ -39,7 +39,7 @@ AUnrealTest1Character::AUnrealTest1Character()
 
 //////////////////////////////////////////////////////////////////////////// Input
 
-void AUnrealTest1Character::NotifyControllerChanged()
+void AUnrealHaversineDemoCharacter::NotifyControllerChanged()
 {
 	Super::NotifyControllerChanged();
 
@@ -53,7 +53,7 @@ void AUnrealTest1Character::NotifyControllerChanged()
 	}
 }
 
-void AUnrealTest1Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AUnrealHaversineDemoCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {	
 	// Set up action bindings
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(PlayerInputComponent))
@@ -63,10 +63,10 @@ void AUnrealTest1Character::SetupPlayerInputComponent(UInputComponent* PlayerInp
 		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
 		// Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUnrealTest1Character::Move);
+		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AUnrealHaversineDemoCharacter::Move);
 
 		// Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUnrealTest1Character::Look);
+		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AUnrealHaversineDemoCharacter::Look);
 	}
 	else
 	{
@@ -75,7 +75,7 @@ void AUnrealTest1Character::SetupPlayerInputComponent(UInputComponent* PlayerInp
 }
 
 
-void AUnrealTest1Character::Move(const FInputActionValue& Value)
+void AUnrealHaversineDemoCharacter::Move(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D MovementVector = Value.Get<FVector2D>();
@@ -88,7 +88,7 @@ void AUnrealTest1Character::Move(const FInputActionValue& Value)
 	}
 }
 
-void AUnrealTest1Character::Look(const FInputActionValue& Value)
+void AUnrealHaversineDemoCharacter::Look(const FInputActionValue& Value)
 {
 	// input is a Vector2D
 	FVector2D LookAxisVector = Value.Get<FVector2D>();

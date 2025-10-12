@@ -1,10 +1,10 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
-#include "UnrealTest1GameMode.h"
-#include "UnrealTest1Character.h"
+#include "UnrealHaversineDemoGameMode.h"
+#include "UnrealHaversineDemoCharacter.h"
 #include "UObject/ConstructorHelpers.h"
 
-AUnrealTest1GameMode::AUnrealTest1GameMode()
+AUnrealHaversineDemoGameMode::AUnrealHaversineDemoGameMode()
 	: Super()
 {
 	// set default pawn class to our Blueprinted character

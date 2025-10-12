@@ -4,19 +4,19 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
-#include "UnrealTest1WeaponComponent.generated.h"
+#include "UnrealHaversineDemoWeaponComponent.generated.h"
 
-class AUnrealTest1Character;
+class AUnrealHaversineDemoCharacter;
 
 UCLASS(Blueprintable, BlueprintType, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class UNREALTEST1_API UUnrealTest1WeaponComponent : public USkeletalMeshComponent
+class UNREALHAVERSINEDEMO_API UUnrealHaversineDemoWeaponComponent : public USkeletalMeshComponent
 {
 	GENERATED_BODY()
 
 public:
 	/** Projectile class to spawn */
 	UPROPERTY(EditDefaultsOnly, Category=Projectile)
-	TSubclassOf<class AUnrealTest1Projectile> ProjectileClass;
+	TSubclassOf<class AUnrealHaversineDemoProjectile> ProjectileClass;
 
 	/** Sound to play each time we fire */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Gameplay)
@@ -39,11 +39,11 @@ public:
 	class UInputAction* FireAction;
 
 	/** Sets default values for this component's properties */
-	UUnrealTest1WeaponComponent();
+	UUnrealHaversineDemoWeaponComponent();
 
 	/** Attaches the actor to a FirstPersonCharacter */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
-	bool AttachWeapon(AUnrealTest1Character* TargetCharacter);
+	bool AttachWeapon(AUnrealHaversineDemoCharacter* TargetCharacter);
 
 	/** Make the weapon Fire a Projectile */
 	UFUNCTION(BlueprintCallable, Category="Weapon")
@@ -56,5 +56,5 @@ protected:
 
 private:
 	/** The Character holding this weapon*/
-	AUnrealTest1Character* Character;
+	AUnrealHaversineDemoCharacter* Character;
 };

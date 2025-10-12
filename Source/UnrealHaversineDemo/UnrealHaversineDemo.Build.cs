@@ -2,9 +2,9 @@
 
 using UnrealBuildTool;
 
-public class UnrealTest1 : ModuleRules
+public class UnrealHaversineDemo : ModuleRules
 {
-	public UnrealTest1(ReadOnlyTargetRules Target) : base(Target)
+	public UnrealHaversineDemo(ReadOnlyTargetRules Target) : base(Target)
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 

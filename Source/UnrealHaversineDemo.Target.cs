@@ -3,13 +3,13 @@
 using UnrealBuildTool;
 using System.Collections.Generic;
 
-public class UnrealTest1Target : TargetRules
+public class UnrealHaversineDemoTarget : TargetRules
 {
-	public UnrealTest1Target(TargetInfo Target) : base(Target)
+	public UnrealHaversineDemoTarget(TargetInfo Target) : base(Target)
 	{
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V5;
 		IncludeOrderVersion = EngineIncludeOrderVersion.Unreal5_5;
-		ExtraModuleNames.Add("UnrealTest1");
+		ExtraModuleNames.Add("UnrealHaversineDemo");
 	}
 }

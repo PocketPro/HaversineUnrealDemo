@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Logging/LogMacros.h"
-#include "UnrealTest1Character.generated.h"
+#include "UnrealHaversineDemoCharacter.generated.h"
 
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -17,7 +17,7 @@ struct FInputActionValue;
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
-class AUnrealTest1Character : public ACharacter
+class AUnrealHaversineDemoCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
@@ -46,7 +46,7 @@ class AUnrealTest1Character : public ACharacter
 	class UInputAction* LookAction;
 	
 public:
-	AUnrealTest1Character();
+	AUnrealHaversineDemoCharacter();
 
 protected:
 	/** Called for movement input */
