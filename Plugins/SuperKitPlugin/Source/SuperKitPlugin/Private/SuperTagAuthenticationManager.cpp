@@ -13,8 +13,18 @@
 #include "Serialization/JsonReader.h"
 #include "Serialization/JsonSerializer.h"
 
+// Suppress warnings from third-party GolfSwingKit/PPCommon headers
+THIRD_PARTY_INCLUDES_START
+#ifdef _MSC_VER
+#pragma warning(disable: 4068)  // unknown pragma mark
+#pragma warning(disable: 4200)  // zero-sized array in struct
+#pragma warning(disable: 4244)  // conversion warnings
+#endif
+
 // Include GolfSwingKit authentication headers
 #include "GolfSwing_authentication.h"
+
+THIRD_PARTY_INCLUDES_END
 
 // Type alias for cleaner code
 using GSAuthTokenCache = GSAuthTokenCache_t;

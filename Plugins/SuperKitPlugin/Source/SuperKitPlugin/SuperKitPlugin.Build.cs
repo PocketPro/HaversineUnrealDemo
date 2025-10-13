@@ -112,6 +112,10 @@ public class SuperKitPlugin : ModuleRules
 
             string WindowsIncludePath = Path.Combine(LibraryPath, "frameworks", "windows", "include");
             PublicIncludePaths.Add(WindowsIncludePath);
+
+            // Windows-specific preprocessor definitions to match CMake build
+            PublicDefinitions.Add("WIN32_LEAN_AND_MEAN");
+            PublicDefinitions.Add("NOMINMAX");
         }
     }
 
