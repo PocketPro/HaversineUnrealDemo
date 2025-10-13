@@ -6,19 +6,34 @@
 
 // Suppress warnings from third-party GolfSwingKit/PPCommon headers
 THIRD_PARTY_INCLUDES_START
+
+#ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundef"
+#endif
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4068)  // unknown pragma mark
 #pragma warning(disable: 4200)  // zero-sized array in struct
 #pragma warning(disable: 4244)  // conversion warnings
+
+// Fix DEPRECATED macro for MSVC (framework headers use GCC __attribute__)
+#undef DEPRECATED
+#define DEPRECATED(msg) __declspec(deprecated(msg))
+
+// Fix __DEPRECATED_V1__ for MSVC
+#undef __DEPRECATED_V1__
+#define __DEPRECATED_V1__ __declspec(deprecated("For legacy SkyPro V1 data only"))
 #endif
 
 // Include GolfSwingKit headers (needed for TOptional to know struct sizes)
 #include "GolfSwing_club.h"
 #include "GolfSwing_sensor_metadata.h"
 
+#ifdef __clang__
 #pragma clang diagnostic pop
+#endif
+
 THIRD_PARTY_INCLUDES_END
 
 // Type aliases for cleaner code
