@@ -55,7 +55,8 @@ haversine::Result<FSuperTagMetadata> FSuperTagExtensions::ParseMetadata(
 	if (!Manager)
 	{
 		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagExtensions: Authentication manager is null"));
-		return haversine::Result<FSuperTagMetadata>::from_application_code(APPLICATION_ERROR_INVALID_ARGUMENT);
+		haversine::Status ErrorStatus("SuperTagExtensions", 1, "Authentication manager is null");
+		return haversine::Result<FSuperTagMetadata>::error(ErrorStatus);
 	}
 
 	// Get serial number from state to look up auth token
