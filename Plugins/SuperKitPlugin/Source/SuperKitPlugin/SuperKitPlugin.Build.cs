@@ -3,12 +3,14 @@
 using UnrealBuildTool;
 using System.IO;
 using System.Diagnostics;
+using System;
 
 public class SuperKitPlugin : ModuleRules
 {
     public SuperKitPlugin(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
+
 
         // C++20 required by HaversineSatelliteLibrary
         CppStandard = CppStandardVersion.Cpp20;
@@ -124,59 +126,25 @@ public class SuperKitPlugin : ModuleRules
         if (Target.Platform == UnrealTargetPlatform.Mac)
         {
             string FrameworksRoot = Path.Combine(LibraryPath, "frameworks", "macos");
-
-                string HaversineFrameworkDir = Path.Combine(
-                    FrameworksRoot, "HaversineUnityPlugin.xcframework", "macos-arm64_x86_64", "HaversineUnityPlugin.framework");
-                string PPCommonFrameworkDir = Path.Combine(
-                    FrameworksRoot, "PPCommon.xcframework", "macos-arm64_x86_64", "PPCommon.framework");
-                string GolfSwingKitFrameworkDir = Path.Combine(
-                    FrameworksRoot, "GolfSwingKit.xcframework", "macos-arm64_x86_64", "GolfSwingKit.framework");
-
-                // Editor/PIE: copy next to the module (works with @loader_path rpath)
-                if (Directory.Exists(HaversineFrameworkDir))
-                {
-                    RuntimeDependencies.Add(
-                        "$(BinaryOutputDir)/HaversineUnityPlugin.framework",
-                        Path.Combine(HaversineFrameworkDir, "*"),
-                        StagedFileType.NonUFS);
-                }
-                if (Directory.Exists(PPCommonFrameworkDir))
-                {
-                    RuntimeDependencies.Add(
-                        "$(BinaryOutputDir)/PPCommon.framework",
-                        Path.Combine(PPCommonFrameworkDir, "*"),
-                        StagedFileType.NonUFS);
-                }
-                if (Directory.Exists(GolfSwingKitFrameworkDir))
-                {
-                    RuntimeDependencies.Add(
-                        "$(BinaryOutputDir)/GolfSwingKit.framework",
-                        Path.Combine(GolfSwingKitFrameworkDir, "*"),
-                        StagedFileType.NonUFS);
-                }
-
-                // Packaged app: copy into Contents/Frameworks (works with @executable_path/../Frameworks rpath)
-                if (Directory.Exists(HaversineFrameworkDir))
-                {
-                    RuntimeDependencies.Add(
-                        "@executable_path/../Frameworks/HaversineUnityPlugin.framework",
-                        Path.Combine(HaversineFrameworkDir, "*"),
-                        StagedFileType.NonUFS);
-                }
-                if (Directory.Exists(PPCommonFrameworkDir))
-                {
-                    RuntimeDependencies.Add(
-                        "@executable_path/../Frameworks/PPCommon.framework",
-                        Path.Combine(PPCommonFrameworkDir, "*"),
-                        StagedFileType.NonUFS);
-                }
-                if (Directory.Exists(GolfSwingKitFrameworkDir))
-                {
-                    RuntimeDependencies.Add(
-                        "@executable_path/../Frameworks/GolfSwingKit.framework",
-                        Path.Combine(GolfSwingKitFrameworkDir, "*"),
-                        StagedFileType.NonUFS);
-                }
+            string HaversineFrameworkDir = Path.Combine(FrameworksRoot, "HaversineUnityPlugin.xcframework", "macos-arm64_x86_64", "HaversineUnityPlugin.framework");
+            string PPCommonFrameworkDir = Path.Combine(FrameworksRoot, "PPCommon.xcframework", "macos-arm64_x86_64", "PPCommon.framework");
+            string GolfSwingKitFrameworkDir = Path.Combine(FrameworksRoot, "GolfSwingKit.xcframework", "macos-arm64_x86_64", "GolfSwingKit.framework");
+            
+            if (Directory.Exists(HaversineFrameworkDir))
+            {
+                RuntimeDependencies.Add("$(BinaryOutputDir)/HaversineUnityPlugin.framework", Path.Combine(HaversineFrameworkDir, "*"), StagedFileType.NonUFS);
+                RuntimeDependencies.Add("@executable_path/../Frameworks/HaversineUnityPlugin.framework", Path.Combine(HaversineFrameworkDir, "*"), StagedFileType.NonUFS);
+            }
+            if (Directory.Exists(PPCommonFrameworkDir))
+            {
+                RuntimeDependencies.Add("$(BinaryOutputDir)/PPCommon.framework", Path.Combine(PPCommonFrameworkDir, "*"), StagedFileType.NonUFS);
+                RuntimeDependencies.Add("@executable_path/../Frameworks/PPCommon.framework", Path.Combine(PPCommonFrameworkDir, "*"), StagedFileType.NonUFS);
+            }
+            if (Directory.Exists(GolfSwingKitFrameworkDir))
+            {
+                RuntimeDependencies.Add("$(BinaryOutputDir)/GolfSwingKit.framework", Path.Combine(GolfSwingKitFrameworkDir, "*"), StagedFileType.NonUFS);
+                RuntimeDependencies.Add("@executable_path/../Frameworks/GolfSwingKit.framework", Path.Combine(GolfSwingKitFrameworkDir, "*"), StagedFileType.NonUFS);
+            }
         }
         else if (Target.Platform == UnrealTargetPlatform.Win64)
         {
@@ -185,19 +153,25 @@ public class SuperKitPlugin : ModuleRules
             string[] DLLs = new string[]
             {
                 "HaversineTransportLayer.dll",
-                "libopenblas.dll"
+                "libopenblas.dll" 
             };
 
             foreach (string dll in DLLs)
             {
-                string DLLPath = Path.Combine(WindowsBinPath, dll);
-                if (File.Exists(DLLPath))
+                string src = Path.Combine(WindowsBinPath, dll);
+                if (File.Exists(src))
                 {
-                    // Copy DLL to binary output directory (next to the plugin DLL)
-                    RuntimeDependencies.Add(
-                        Path.Combine("$(BinaryOutputDir)", dll),
-                        DLLPath,
-                        StagedFileType.NonUFS);
+                    // 1) Copy next to the built target (Editor/Game) – this is where Windows looks
+                    RuntimeDependencies.Add("$(TargetOutputDir)/" + dll, src);
+
+                    // 2) Also copy explicitly to <Project>/Binaries/Win64 (helps some editor launch paths)
+                    RuntimeDependencies.Add("$(ProjectDir)/Binaries/Win64/" + dll, src);
+
+                    Console.WriteLine($"[SuperKitPlugin] Staging {dll} from {src}");
+                }
+                else
+                {
+                    Console.WriteLine($"[SuperKitPlugin] Staging {dll} from {src}");
                 }
             }
         }
