@@ -180,7 +180,7 @@ public class SuperKitPlugin : ModuleRules
         }
         else if (Target.Platform == UnrealTargetPlatform.Win64)
         {
-            // Copy Windows DLLs to packaged output
+            // Copy Windows DLLs to binary output directory
             string WindowsBinPath = Path.Combine(LibraryPath, "frameworks", "windows", "bin");
             string[] DLLs = new string[]
             {
@@ -193,7 +193,11 @@ public class SuperKitPlugin : ModuleRules
                 string DLLPath = Path.Combine(WindowsBinPath, dll);
                 if (File.Exists(DLLPath))
                 {
-                    RuntimeDependencies.Add(DLLPath);
+                    // Copy DLL to binary output directory (next to the plugin DLL)
+                    RuntimeDependencies.Add(
+                        Path.Combine("$(BinaryOutputDir)", dll),
+                        DLLPath,
+                        StagedFileType.NonUFS);
                 }
             }
         }
