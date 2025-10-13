@@ -11,14 +11,6 @@ THIRD_PARTY_INCLUDES_START
 #pragma warning(disable: 4068)  // unknown pragma mark
 #pragma warning(disable: 4200)  // zero-sized array in struct
 #pragma warning(disable: 4244)  // conversion warnings
-
-// Fix DEPRECATED macro for MSVC (framework headers use GCC __attribute__)
-#undef DEPRECATED
-#define DEPRECATED(msg) __declspec(deprecated(msg))
-
-// Fix __DEPRECATED_V1__ for MSVC
-#undef __DEPRECATED_V1__
-#define __DEPRECATED_V1__ __declspec(deprecated("For legacy SkyPro V1 data only"))
 #endif
 
 #include "GolfSwing_sensor_metadata.h"
