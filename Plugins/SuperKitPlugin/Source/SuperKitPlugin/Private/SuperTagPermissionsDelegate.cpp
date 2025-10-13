@@ -173,20 +173,22 @@ bool FSuperTagPermissionsDelegate::TryGetUserIdFromSatellite(const haversine::Ha
 		return false;
 	}
 
-	try
-	{
-		// Parse metadata with authentication token
-		FSuperTagMetadata Metadata = FSuperTagExtensions::ParseMetadata(Satellite.state(), AuthenticationManager.Get());
+	// Parse metadata with authentication token
+	haversine::Result<FSuperTagMetadata> MetadataResult = FSuperTagExtensions::ParseMetadata(Satellite.state(), AuthenticationManager.Get());
 
+	if (MetadataResult.ok())
+	{
+		const FSuperTagMetadata& Metadata = MetadataResult.value();
 		if (Metadata.UserId.IsSet())
 		{
 			OutUserId = Metadata.UserId.GetValue();
 			return true;
 		}
 	}
-	catch (...)
+	else
 	{
-		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagPermissionsDelegate: Error parsing metadata from satellite"));
+		FString ErrorMsg = UTF8_TO_TCHAR(MetadataResult.status().to_string().c_str());
+		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagPermissionsDelegate: Error parsing metadata from satellite: %s"), *ErrorMsg);
 	}
 
 	return false;

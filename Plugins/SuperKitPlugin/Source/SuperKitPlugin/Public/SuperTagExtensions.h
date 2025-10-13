@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "SuperTagMetadata.h"
+#include "haversine/result.h"
 
 // Forward declarations
 namespace haversine
@@ -25,10 +26,9 @@ public:
 	 * @param State The satellite state to parse
 	 * @param AuthenticationToken An optional authentication token for decrypting metadata
 	 * @param Cache An optional cache handle for speeding up authentication
-	 * @return A SuperTagMetadata object containing the parsed metadata
-	 * @throws Exception if metadata parsing fails
+	 * @return Result containing the parsed metadata on success, or error on failure
 	 */
-	static FSuperTagMetadata ParseMetadata(
+	static haversine::Result<FSuperTagMetadata> ParseMetadata(
 		const haversine::SatelliteState& State,
 		const FString& AuthenticationToken = FString(),
 		void* Cache = nullptr);
@@ -39,10 +39,9 @@ public:
 	 *
 	 * @param State The satellite state to parse
 	 * @param Manager The authentication manager to use for token lookup
-	 * @return A SuperTagMetadata object containing the parsed metadata
-	 * @throws Exception if metadata parsing fails
+	 * @return Result containing the parsed metadata on success, or error on failure
 	 */
-	static FSuperTagMetadata ParseMetadata(
+	static haversine::Result<FSuperTagMetadata> ParseMetadata(
 		const haversine::SatelliteState& State,
 		USuperTagAuthenticationManager* Manager);
 
@@ -54,9 +53,9 @@ private:
 	 * @param DataLength Length of the application data
 	 * @param AuthToken Authentication token (optional)
 	 * @param Cache Cache handle (optional)
-	 * @return Deserialized GSSensorMetadata
+	 * @return Result containing deserialized GSSensorMetadata on success, or error on failure
 	 */
-	static GSSensorMetadata DeserializeGSSensorMetadata(
+	static haversine::Result<GSSensorMetadata> DeserializeGSSensorMetadata(
 		const uint8_t* ApplicationData,
 		size_t DataLength,
 		const FString& AuthToken,

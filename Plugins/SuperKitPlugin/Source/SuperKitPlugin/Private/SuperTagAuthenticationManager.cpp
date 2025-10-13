@@ -48,15 +48,8 @@ void USuperTagAuthenticationManager::BeginDestroy()
 	// Free the GolfSwingKit auth token cache
 	if (AuthTokenCacheHandle)
 	{
-		try
-		{
-			GSFreeAuthTokenCache(static_cast<GSAuthTokenCache*>(AuthTokenCacheHandle));
-			AuthTokenCacheHandle = nullptr;
-		}
-		catch (...)
-		{
-			UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Error freeing auth token cache"));
-		}
+		GSFreeAuthTokenCache(static_cast<GSAuthTokenCache*>(AuthTokenCacheHandle));
+		AuthTokenCacheHandle = nullptr;
 	}
 
 	// Cancel all pending HTTP requests
@@ -229,67 +222,59 @@ void USuperTagAuthenticationManager::OnTokenFetchComplete(FHttpRequestPtr Reques
 
 FDateTime USuperTagAuthenticationManager::GetTokenExpiryDate(const FString& Token) const
 {
-	try
+	// JWT format: header.payload.signature
+	TArray<FString> Segments;
+	Token.ParseIntoArray(Segments, TEXT("."));
+
+	if (Segments.Num() != 3)
 	{
-		// JWT format: header.payload.signature
-		TArray<FString> Segments;
-		Token.ParseIntoArray(Segments, TEXT("."));
-
-		if (Segments.Num() != 3)
-		{
-			UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Invalid JWT format (wrong number of segments) for token: %s"), *Token);
-			return FDateTime::MinValue();
-		}
-
-		// Base64URL decode the payload segment
-		FString PayloadSegment = Segments[1];
-
-		// Convert Base64URL to standard Base64
-		FString Base64 = PayloadSegment.Replace(TEXT("-"), TEXT("+")).Replace(TEXT("_"), TEXT("/"));
-
-		// Add padding if needed
-		int32 PaddingNeeded = Base64.Len() % 4;
-		if (PaddingNeeded > 0)
-		{
-			Base64.Append(FString::ChrN(4 - PaddingNeeded, '='));
-		}
-
-		// Decode Base64
-		TArray<uint8> PayloadBytes;
-		if (!FBase64::Decode(Base64, PayloadBytes))
-		{
-			UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Failed to decode Base64 payload for token: %s"), *Token);
-			return FDateTime::MinValue();
-		}
-
-		// Convert bytes to string
-		FString PayloadJson = FString(UTF8_TO_TCHAR(PayloadBytes.GetData()));
-
-		// Parse JSON payload
-		TSharedPtr<FJsonObject> PayloadObject;
-		TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadJson);
-
-		if (!FJsonSerializer::Deserialize(Reader, PayloadObject) || !PayloadObject.IsValid())
-		{
-			UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Failed to parse JWT payload JSON for token: %s"), *Token);
-			return FDateTime::MinValue();
-		}
-
-		// Extract 'exp' claim (Unix timestamp)
-		if (!PayloadObject->HasField(TEXT("exp")))
-		{
-			UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: JWT payload missing 'exp' claim for token: %s"), *Token);
-			return FDateTime::MinValue();
-		}
-
-		double ExpUnixTimestamp = PayloadObject->GetNumberField(TEXT("exp"));
-		return FDateTime::FromUnixTimestamp(static_cast<int64>(ExpUnixTimestamp));
-	}
-	catch (...)
-	{
-		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Error parsing JWT token"));
+		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Invalid JWT format (wrong number of segments) for token: %s"), *Token);
 		return FDateTime::MinValue();
 	}
+
+	// Base64URL decode the payload segment
+	FString PayloadSegment = Segments[1];
+
+	// Convert Base64URL to standard Base64
+	FString Base64 = PayloadSegment.Replace(TEXT("-"), TEXT("+")).Replace(TEXT("_"), TEXT("/"));
+
+	// Add padding if needed
+	int32 PaddingNeeded = Base64.Len() % 4;
+	if (PaddingNeeded > 0)
+	{
+		Base64.Append(FString::ChrN(4 - PaddingNeeded, '='));
+	}
+
+	// Decode Base64
+	TArray<uint8> PayloadBytes;
+	if (!FBase64::Decode(Base64, PayloadBytes))
+	{
+		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Failed to decode Base64 payload for token: %s"), *Token);
+		return FDateTime::MinValue();
+	}
+
+	// Convert bytes to string
+	FString PayloadJson = FString(UTF8_TO_TCHAR(PayloadBytes.GetData()));
+
+	// Parse JSON payload
+	TSharedPtr<FJsonObject> PayloadObject;
+	TSharedRef<TJsonReader<>> Reader = TJsonReaderFactory<>::Create(PayloadJson);
+
+	if (!FJsonSerializer::Deserialize(Reader, PayloadObject) || !PayloadObject.IsValid())
+	{
+		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Failed to parse JWT payload JSON for token: %s"), *Token);
+		return FDateTime::MinValue();
+	}
+
+	// Extract 'exp' claim (Unix timestamp)
+	if (!PayloadObject->HasField(TEXT("exp")))
+	{
+		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: JWT payload missing 'exp' claim for token: %s"), *Token);
+		return FDateTime::MinValue();
+	}
+
+	double ExpUnixTimestamp = PayloadObject->GetNumberField(TEXT("exp"));
+	return FDateTime::FromUnixTimestamp(static_cast<int64>(ExpUnixTimestamp));
 }
 
 void USuperTagAuthenticationManager::SetToken(const FString& Token, const FString& HardwareId)

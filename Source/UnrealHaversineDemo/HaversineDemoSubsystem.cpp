@@ -291,14 +291,17 @@ void UHaversineDemoSubsystem::OnSatelliteDiscovered(const std::shared_ptr<havers
 	FString UserInfo = TEXT("none");
 	if (AuthenticationManager)
 	{
-		try
+		haversine::Result<FSuperTagMetadata> MetadataResult = FSuperTagExtensions::ParseMetadata(Satellite->state(), AuthenticationManager);
+
+		if (MetadataResult.ok())
 		{
-			FSuperTagMetadata Metadata = FSuperTagExtensions::ParseMetadata(Satellite->state(), AuthenticationManager);
+			const FSuperTagMetadata& Metadata = MetadataResult.value();
 
 			if (Metadata.Club.IsSet())
 			{
-				// TODO: Format club info when GolfSwingKit is available
-				ClubInfo = TEXT("club detected");
+				const GSClub& Club = Metadata.Club.GetValue();
+				FString ClubLongName = UTF8_TO_TCHAR(Club.longName);
+				ClubInfo = ClubLongName.IsEmpty() ? TEXT("(unnamed club)") : ClubLongName;
 			}
 
 			if (Metadata.UserId.IsSet())
@@ -306,9 +309,10 @@ void UHaversineDemoSubsystem::OnSatelliteDiscovered(const std::shared_ptr<havers
 				UserInfo = FString::Printf(TEXT("User %u"), Metadata.UserId.GetValue());
 			}
 		}
-		catch (...)
+		else
 		{
-			ClubInfo = TEXT("parse error");
+			FString ErrorMsg = UTF8_TO_TCHAR(MetadataResult.status().to_string().c_str());
+			ClubInfo = FString::Printf(TEXT("parse error: %s"), *ErrorMsg);
 		}
 	}
 

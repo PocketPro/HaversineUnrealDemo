@@ -24,7 +24,7 @@ THIRD_PARTY_INCLUDES_END
 // Type aliases
 using GSAuthTokenCache = GSAuthTokenCache_t;
 
-FSuperTagMetadata FSuperTagExtensions::ParseMetadata(
+haversine::Result<FSuperTagMetadata> FSuperTagExtensions::ParseMetadata(
 	const haversine::SatelliteState& State,
 	const FString& AuthenticationToken,
 	void* Cache)
@@ -33,25 +33,29 @@ FSuperTagMetadata FSuperTagExtensions::ParseMetadata(
 	const std::vector<uint8_t>& AppData = State.persistent().application_data();
 
 	// Deserialize GSSensorMetadata
-	GSSensorMetadata SensorMetadata = DeserializeGSSensorMetadata(
+	haversine::Result<GSSensorMetadata> MetadataResult = DeserializeGSSensorMetadata(
 		AppData.data(),
 		AppData.size(),
 		AuthenticationToken,
 		Cache);
 
+	if (!MetadataResult.ok())
+	{
+		return haversine::Result<FSuperTagMetadata>::error(MetadataResult.status());
+	}
+
 	// Convert to SuperTagMetadata
-	return FSuperTagMetadata(SensorMetadata);
+	return haversine::Result<FSuperTagMetadata>::ok(FSuperTagMetadata(MetadataResult.value()));
 }
 
-FSuperTagMetadata FSuperTagExtensions::ParseMetadata(
+haversine::Result<FSuperTagMetadata> FSuperTagExtensions::ParseMetadata(
 	const haversine::SatelliteState& State,
 	USuperTagAuthenticationManager* Manager)
 {
 	if (!Manager)
 	{
 		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagExtensions: Authentication manager is null"));
-		// Return empty metadata
-		return FSuperTagMetadata();
+		return haversine::Result<FSuperTagMetadata>::from_application_code(APPLICATION_ERROR_INVALID_ARGUMENT);
 	}
 
 	// Get serial number from state to look up auth token
@@ -63,7 +67,7 @@ FSuperTagMetadata FSuperTagExtensions::ParseMetadata(
 	return ParseMetadata(State, AuthToken, CacheHandle);
 }
 
-GSSensorMetadata FSuperTagExtensions::DeserializeGSSensorMetadata(
+haversine::Result<GSSensorMetadata> FSuperTagExtensions::DeserializeGSSensorMetadata(
 	const uint8_t* ApplicationData,
 	size_t DataLength,
 	const FString& AuthToken,
@@ -82,10 +86,13 @@ GSSensorMetadata FSuperTagExtensions::DeserializeGSSensorMetadata(
 	if (ErrorCode != GSSuccess)
 	{
 		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagExtensions: Failed to deserialize GSSensorMetadata, error code: %d"), (int)ErrorCode);
-		// Return empty metadata on error
-		GSSensorMetadata EmptyMetadata = {};
-		return EmptyMetadata;
+
+		// Map GolfSwingKit error to haversine error
+		FString ErrorDesc = FString::Printf(TEXT("GolfSwingKit deserialization failed with error code %d"), (int)ErrorCode);
+		haversine::Status ErrorStatus("GolfSwingKit", (uint32_t)ErrorCode, TCHAR_TO_UTF8(*ErrorDesc));
+
+		return haversine::Result<GSSensorMetadata>::error(ErrorStatus);
 	}
 
-	return Metadata;
+	return haversine::Result<GSSensorMetadata>::ok(Metadata);
 }
