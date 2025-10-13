@@ -190,14 +190,31 @@ public class SuperKitPlugin : ModuleRules
 
             foreach (string dll in DLLs)
             {
-                string DLLPath = Path.Combine(WindowsBinPath, dll);
-                if (File.Exists(DLLPath))
+                string SourceDLLPath = Path.Combine(WindowsBinPath, dll);
+                if (File.Exists(SourceDLLPath))
                 {
-                    // Copy DLL to binary output directory (next to the plugin DLL)
-                    RuntimeDependencies.Add(
-                        Path.Combine("$(BinaryOutputDir)", dll),
-                        DLLPath,
-                        StagedFileType.NonUFS);
+                    // Add delay-load DLL
+                    PublicDelayLoadDLLs.Add(dll);
+
+                    // Register for packaging
+                    RuntimeDependencies.Add(SourceDLLPath);
+
+                    // Manually copy DLL to project binaries for editor builds
+                    string ProjectBinariesPath = Path.Combine(Target.ProjectFile.Directory.FullName, "Binaries", "Win64");
+                    if (!Directory.Exists(ProjectBinariesPath))
+                    {
+                        Directory.CreateDirectory(ProjectBinariesPath);
+                    }
+
+                    string DestDLLPath = Path.Combine(ProjectBinariesPath, dll);
+
+                    // Copy if source is newer or dest doesn't exist
+                    if (!File.Exists(DestDLLPath) ||
+                        File.GetLastWriteTime(SourceDLLPath) > File.GetLastWriteTime(DestDLLPath))
+                    {
+                        File.Copy(SourceDLLPath, DestDLLPath, true);
+                        System.Console.WriteLine($"Copied {dll} to {ProjectBinariesPath}");
+                    }
                 }
             }
         }
