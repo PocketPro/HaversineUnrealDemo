@@ -3,12 +3,22 @@
 #include "SuperTagGolfSwing.h"
 #include "Logging/LogMacros.h"
 
+// Suppress warnings from third-party GolfSwingKit/PPCommon headers
+THIRD_PARTY_INCLUDES_START
+#ifdef _MSC_VER
+#pragma warning(disable: 4068)  // unknown pragma mark
+#pragma warning(disable: 4200)  // zero-sized array in struct
+#pragma warning(disable: 4244)  // conversion warnings
+#endif
+
 // Include GolfSwingKit headers
 #include "GolfSwingKit.h"
 #include "GolfSwing_core.h"
 #include "GolfSwing_club.h"
 #include "GolfSwing_authentication.h"
 #include "GolfSwing_types.h"
+
+THIRD_PARTY_INCLUDES_END
 
 DEFINE_LOG_CATEGORY_STATIC(LogSuperTagGolfSwing, Log, All);
 

@@ -8,6 +8,11 @@
 THIRD_PARTY_INCLUDES_START
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wundef"
+#ifdef _MSC_VER
+#pragma warning(disable: 4068)  // unknown pragma mark
+#pragma warning(disable: 4200)  // zero-sized array in struct
+#pragma warning(disable: 4244)  // conversion warnings
+#endif
 
 // Include GolfSwingKit headers (needed for TOptional to know struct sizes)
 #include "GolfSwing_club.h"

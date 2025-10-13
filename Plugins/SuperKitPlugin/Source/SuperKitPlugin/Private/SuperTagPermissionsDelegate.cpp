@@ -5,7 +5,19 @@
 #include "SuperTagExtensions.h"
 #include "haversine/haversine_satellite.h"
 #include "haversine/haversine_satellite_state.h"
+
+// Suppress warnings from third-party GolfSwingKit/PPCommon headers
+THIRD_PARTY_INCLUDES_START
+#ifdef _MSC_VER
+#pragma warning(disable: 4068)  // unknown pragma mark
+#pragma warning(disable: 4200)  // zero-sized array in struct
+#pragma warning(disable: 4244)  // conversion warnings
+#endif
+
 #include "GolfSwing_sensor_metadata.h"
+
+THIRD_PARTY_INCLUDES_END
+
 #include "SuperKitPlugin.h"
 
 FSuperTagPermissionsDelegate::FSuperTagPermissionsDelegate(USuperTagAuthenticationManager* InAuthenticationManager)
