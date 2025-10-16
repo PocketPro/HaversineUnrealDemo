@@ -245,16 +245,13 @@ FDateTime USuperTagAuthenticationManager::GetTokenExpiryDate(const FString& Toke
 		Base64.Append(FString::ChrN(4 - PaddingNeeded, '='));
 	}
 
-	// Decode Base64
-	TArray<uint8> PayloadBytes;
-	if (!FBase64::Decode(Base64, PayloadBytes))
+	// Decode Base64 directly to string
+	FString PayloadJson;
+	if (!FBase64::Decode(Base64, PayloadJson))
 	{
 		UE_LOG(LogHaversineSatellite, Error, TEXT("SuperTagAuthenticationManager: Failed to decode Base64 payload for token: %s"), *Token);
 		return FDateTime::MinValue();
 	}
-
-	// Convert bytes to string
-	FString PayloadJson = FString(UTF8_TO_TCHAR(PayloadBytes.GetData()));
 
 	// Parse JSON payload
 	TSharedPtr<FJsonObject> PayloadObject;
