@@ -3,7 +3,7 @@
 #include "SuperTagAuthenticationManager.h"
 #include "SuperTagTokenCache.h"
 #include "SuperTagConfiguration.h"
-#include "SuperKitPlugin.h"
+#include "SuperTagKitPlugin.h"
 #include "Http.h"
 #include "HttpModule.h"
 #include "Interfaces/IHttpResponse.h"

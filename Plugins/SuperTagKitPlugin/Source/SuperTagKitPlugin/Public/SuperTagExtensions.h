@@ -17,7 +17,7 @@ class USuperTagAuthenticationManager;
  * Extension utilities for parsing satellite state metadata
  * Provides convenient methods for extracting SuperTag metadata from Haversine satellite states
  */
-class SUPERKITPLUGIN_API FSuperTagExtensions
+class SUPERTAGKITPLUGIN_API FSuperTagExtensions
 {
 public:
 	/**

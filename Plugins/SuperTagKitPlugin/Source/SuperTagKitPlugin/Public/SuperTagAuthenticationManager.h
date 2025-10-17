@@ -21,7 +21,7 @@ using FHttpResponsePtr = TSharedPtr<IHttpResponse, ESPMode::ThreadSafe>;
  * Thread Safety: All public methods should be called from the game thread
  */
 UCLASS()
-class SUPERKITPLUGIN_API USuperTagAuthenticationManager : public UObject
+class SUPERTAGKITPLUGIN_API USuperTagAuthenticationManager : public UObject
 {
 	GENERATED_BODY()
 

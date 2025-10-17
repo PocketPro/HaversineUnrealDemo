@@ -36,7 +36,7 @@ using GSSensorMetadata = GSSensorMetadata_t;
  * Satellite metadata container
  * Wraps GolfSwingKit's GSSensorMetadata with convenient Unreal types
  */
-struct SUPERKITPLUGIN_API FSuperTagMetadata
+struct SUPERTAGKITPLUGIN_API FSuperTagMetadata
 {
 public:
 	/** Associated club (if any) */

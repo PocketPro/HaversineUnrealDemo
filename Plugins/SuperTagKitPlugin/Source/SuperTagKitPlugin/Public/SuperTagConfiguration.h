@@ -8,7 +8,7 @@
  * Configuration parameters for SuperTag system
  * Static configuration for API endpoints and authentication
  */
-class SUPERKITPLUGIN_API FSuperTagConfiguration
+class SUPERTAGKITPLUGIN_API FSuperTagConfiguration
 {
 public:
 	/** Base URL for SkyGolf API */

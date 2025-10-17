@@ -14,7 +14,7 @@ namespace haversine {
 /**
  * Delegate for providing firmware and sensor config updates to satellites
  */
-class SUPERKITPLUGIN_API FSuperTagUpdateDelegate : public haversine::HaversineUpdateDelegate
+class SUPERTAGKITPLUGIN_API FSuperTagUpdateDelegate : public haversine::HaversineUpdateDelegate
 {
 public:
 	FSuperTagUpdateDelegate() = default;

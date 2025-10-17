@@ -23,7 +23,7 @@ typedef struct GSAuthTokenCache_s GSAuthTokenCache_t;
  *   // Option 2: Direct GolfSwingKit C API access
  *   GSGetParameterForKey(swing.GetHandle(), kSomeParameter);
  */
-class SUPERKITPLUGIN_API FSuperTagGolfSwing
+class SUPERTAGKITPLUGIN_API FSuperTagGolfSwing
 {
 public:
 	/**

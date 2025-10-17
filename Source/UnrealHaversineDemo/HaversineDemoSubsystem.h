@@ -6,7 +6,7 @@
 #include "Subsystems/GameInstanceSubsystem.h"
 
 // Include plugin for core functionality and logging
-#include "SuperKitPlugin.h"
+#include "SuperTagKitPlugin.h"
 
 // Include haversine library headers
 #include "haversine/haversine_satellite_manager.h"

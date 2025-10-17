@@ -2,7 +2,7 @@
 
 #include "SuperTagExtensions.h"
 #include "SuperTagAuthenticationManager.h"
-#include "SuperKitPlugin.h"
+#include "SuperTagKitPlugin.h"
 #include "haversine/haversine_satellite_state.h"
 
 // Suppress warnings from third-party GolfSwingKit/PPCommon headers

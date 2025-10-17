@@ -5,9 +5,9 @@ using System.IO;
 using System.Diagnostics;
 using System;
 
-public class SuperKitPlugin : ModuleRules
+public class SuperTagKitPlugin : ModuleRules
 {
-    public SuperKitPlugin(ReadOnlyTargetRules Target) : base(Target)
+    public SuperTagKitPlugin(ReadOnlyTargetRules Target) : base(Target)
     {
         PCHUsage = ModuleRules.PCHUsageMode.UseExplicitOrSharedPCHs;
 
@@ -167,11 +167,11 @@ public class SuperKitPlugin : ModuleRules
                     // 2) Also copy explicitly to <Project>/Binaries/Win64 (helps some editor launch paths)
                     RuntimeDependencies.Add("$(ProjectDir)/Binaries/Win64/" + dll, src);
 
-                    Console.WriteLine($"[SuperKitPlugin] Staging {dll} from {src}");
+                    Console.WriteLine($"[SuperTagKitPlugin] Staging {dll} from {src}");
                 }
                 else
                 {
-                    Console.WriteLine($"[SuperKitPlugin] Staging {dll} from {src}");
+                    Console.WriteLine($"[SuperTagKitPlugin] Staging {dll} from {src}");
                 }
             }
         }

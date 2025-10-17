@@ -11,7 +11,7 @@
  * Stores a mapping of hardware IDs to JWT tokens
  */
 UCLASS()
-class SUPERKITPLUGIN_API USuperTagTokenCache : public USaveGame
+class SUPERTAGKITPLUGIN_API USuperTagTokenCache : public USaveGame
 {
 	GENERATED_BODY()
 

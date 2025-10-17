@@ -18,7 +18,7 @@ THIRD_PARTY_INCLUDES_START
 
 THIRD_PARTY_INCLUDES_END
 
-#include "SuperKitPlugin.h"
+#include "SuperTagKitPlugin.h"
 
 FSuperTagPermissionsDelegate::FSuperTagPermissionsDelegate(USuperTagAuthenticationManager* InAuthenticationManager)
 	: PermissionMode(ESuperTagPermissionMode::AnyUser)

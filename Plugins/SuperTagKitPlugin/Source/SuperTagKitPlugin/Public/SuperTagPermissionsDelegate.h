@@ -25,7 +25,7 @@ enum class ESuperTagPermissionMode : uint8
  * Avoids interactions with satellites belonging to other users, reducing connections,
  * improving latency and battery life, and preventing inadvertent state modifications
  */
-class SUPERKITPLUGIN_API FSuperTagPermissionsDelegate : public haversine::HaversinePermissionsDelegate
+class SUPERTAGKITPLUGIN_API FSuperTagPermissionsDelegate : public haversine::HaversinePermissionsDelegate
 {
 public:
 	/**
