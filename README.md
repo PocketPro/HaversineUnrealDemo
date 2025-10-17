@@ -84,9 +84,8 @@ UnrealHaversineDemo/
 ### Running the Demo
 
 1. Launch the Unreal Editor (double-click `UnrealHaversineDemo.uproject`)
-2. Open the level: `Content/FirstPerson/Maps/FirstPersonMap`
-3. Click **Play** (Alt+P or Play button)
-4. The `UHaversineSatelliteSubsystem` will automatically:
+2. Click **Play** (Alt+P or Play button)
+3. The `UHaversineSatelliteSubsystem` will automatically:
    - Start scanning for nearby SuperTags
    - Authenticate discovered satellites with the SkyGolf API
    - Parse metadata (club type, user ID)
