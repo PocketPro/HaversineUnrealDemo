@@ -14,6 +14,7 @@
 #include "SuperTagUpdateDelegate.h"
 #include "SuperTagExtensions.h"
 #include "SuperTagGolfSwing.h"
+#include "SuperTagSwingUploader.h"
 #include "haversine/haversine_satellite_manager.h"
 #include "haversine/haversine_environment.h"
 #include "haversine/haversine_satellite.h"
@@ -131,6 +132,28 @@ public:
 			FString Message = FString::Printf(TEXT("Swing: %s @ %.1f MPH (%s)"), *ClubName, Speed, *Handedness);
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Cyan, Message);
 		}
+
+		// Upload the swing to SkyGolf API
+		// The uploader will parse metadata internally from collection data
+		TArray<uint8> CollectionDataArray(CollectionData.data(), CollectionData.size());
+		FSuperTagSwingUploader::UploadSwing(
+			CollectionDataArray,
+			Swing,
+			HardwareId,
+			AuthToken,
+			TokenCache,
+			[SatID](bool bSuccess, const FString& ErrorMessage)
+			{
+				if (bSuccess)
+				{
+					UE_LOG(LogHaversineSatellite, Log, TEXT("  ✓ Successfully uploaded swing to SkyGolf API for satellite %s"), *SatID);
+				}
+				else
+				{
+					UE_LOG(LogHaversineSatellite, Warning, TEXT("  ⚠ Failed to upload swing to SkyGolf API: %s"), *ErrorMessage);
+				}
+			}
+		);
 	}
 
 	virtual void collection_transfer_did_fail(
